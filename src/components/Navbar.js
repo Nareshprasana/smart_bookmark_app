@@ -29,14 +29,14 @@ export function Navbar({ user }) {
     { label: "Dashboard", href: "#dashboard", icon: LayoutDashboard },
     { label: "Collections", href: "#collections", icon: FolderOpen },
     { label: "Analytics", href: "#analytics", icon: BarChart3 },
-    { label: "Settings", href: "#settings", icon: Settings },
+    { label: "Account", href: "#settings", icon: User },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-teal-900/10 bg-white/80 shadow-sm shadow-teal-900/5 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75">
       <Container>
         <div className="flex h-16 items-center justify-between">
-          <a href="#dashboard" title="Go to dashboard" aria-label="Go to dashboard" className="flex items-center gap-3">
+          <a href="#dashboard" title="Go to dashboard" aria-label="Go to dashboard" data-tour="brand" className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-white shadow-sm shadow-teal-800/20 transition-transform hover:scale-105">
               <Bookmark className="h-5 w-5" />
             </div>
@@ -46,7 +46,7 @@ export function Navbar({ user }) {
             </div>
           </a>
 
-          <nav className="hidden items-center rounded-lg border border-teal-900/10 bg-teal-50/80 p-1 text-sm font-medium text-slate-600 md:flex">
+          <nav data-tour="navigation" className="hidden items-center rounded-lg border border-teal-900/10 bg-teal-50/80 p-1 text-sm font-medium text-slate-600 md:flex">
             {navItems.map(({ label, href, icon: Icon }) => (
               <a
                 key={label}
@@ -64,6 +64,7 @@ export function Navbar({ user }) {
           <div className="flex items-center gap-2">
             <button
               onClick={focusSearch}
+              data-tour="nav-search"
               className="hidden h-9 w-9 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-sky-100 hover:text-sky-800 md:flex"
               title="Search bookmarks"
               aria-label="Search bookmarks"
@@ -76,6 +77,7 @@ export function Navbar({ user }) {
                   setIsNotificationsOpen((value) => !value);
                   setIsProfileOpen(false);
                 }}
+                data-tour="notifications"
                 className="relative flex h-9 w-9 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-amber-100 hover:text-amber-800"
                 title="Notifications"
                 aria-label="Notifications"
@@ -98,6 +100,7 @@ export function Navbar({ user }) {
                   aria-label="Open profile menu"
                   aria-expanded={isProfileOpen}
                   title="Open profile menu"
+                  data-tour="profile"
                 >
                   <div className="flex max-w-44 flex-col text-right">
                     <span className="truncate text-sm font-medium leading-none">{user.user_metadata?.full_name || "User"}</span>

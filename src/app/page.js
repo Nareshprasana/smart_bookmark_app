@@ -24,7 +24,7 @@ export default async function Dashboard() {
       
       <main className="py-8">
         <Container>
-          <DashboardClient initialBookmarks={bookmarks || []} />
+          <DashboardClient initialBookmarks={bookmarks || []} user={user} />
         </Container>
       </main>
     </div>
