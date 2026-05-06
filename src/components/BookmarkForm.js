@@ -37,13 +37,13 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
   }, [onCancel]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md rounded-2xl border bg-card p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-xl border border-teal-900/10 bg-white p-6 shadow-2xl shadow-teal-950/20 animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold tracking-tight">Add New Bookmark</h2>
           <button
             onClick={onCancel}
-            className="rounded-full p-2 hover:bg-muted transition-colors"
+            className="rounded-md p-2 transition-colors hover:bg-teal-50"
           >
             <X className="h-5 w-5 text-muted-foreground" />
           </button>
@@ -55,7 +55,7 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <input
               {...register("url")}
               placeholder="https://example.com"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
             {errors.url && <p className="text-sm text-destructive">{errors.url.message}</p>}
           </div>
@@ -65,7 +65,7 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <input
               {...register("title")}
               placeholder="Bookmark Title"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
             {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
           </div>
@@ -75,22 +75,22 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <input
               {...register("category")}
               placeholder="e.g. Work, Reading List"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-border mt-6">
+          <div className="mt-6 flex justify-end gap-3 border-t border-teal-900/10 pt-4">
             <button
               type="button"
               onClick={onCancel}
-              className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+              className="inline-flex h-10 items-center justify-center rounded-md border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-900 hover:bg-sky-100"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 gap-2"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50"
             >
               {isLoading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />}
               Save Bookmark
