@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { Bookmark, Github } from "lucide-react";
+import { Bookmark, GitBranch } from "lucide-react";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -87,7 +87,7 @@ export default function LoginPage() {
               disabled
               className="flex w-full items-center justify-center gap-3 rounded-lg border bg-background px-4 py-3 text-sm font-medium text-muted-foreground shadow-sm transition-all hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <Github className="h-5 w-5" />
+              <GitBranch className="h-5 w-5" />
               Continue with GitHub (Coming Soon)
             </button>
           </div>
