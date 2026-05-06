@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useMemo } from "react";
-import { FolderPlus, BookmarkPlus, Sparkles, TrendingUp, Search, X, ShieldCheck, Radio, SlidersHorizontal } from "lucide-react";
+import { FolderPlus, BookmarkPlus, Sparkles, TrendingUp, Search, X, ShieldCheck, Radio, SlidersHorizontal, Palette, Minimize2 } from "lucide-react";
 import { toast } from "sonner";
 import { BookmarkCard } from "./BookmarkCard";
 import { BookmarkForm } from "./BookmarkForm";
@@ -14,8 +14,13 @@ import { cn } from "@/lib/utils";
 export function DashboardClient({ initialBookmarks }) {
   const [bookmarks, setBookmarks] = useState(initialBookmarks || []);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [folderName, setFolderName] = useState("");
+  const [customFolders, setCustomFolders] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteCandidate, setDeleteCandidate] = useState(null);
+  const [isCompactView, setIsCompactView] = useState(false);
+  const [useColorBadges, setUseColorBadges] = useState(true);
 
   // Search and Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,9 +57,12 @@ export function DashboardClient({ initialBookmarks }) {
 
   // Unique categories for the chips/sidebar
   const uniqueCategories = useMemo(() => {
-    const cats = new Set(bookmarks.map(b => b.category || "Uncategorized"));
+    const cats = new Set([
+      ...bookmarks.map(b => b.category || "Uncategorized"),
+      ...customFolders,
+    ]);
     return Array.from(cats).sort();
-  }, [bookmarks]);
+  }, [bookmarks, customFolders]);
 
   const handleAddBookmark = async (data, resetForm) => {
     setIsSubmitting(true);
@@ -73,6 +81,27 @@ export function DashboardClient({ initialBookmarks }) {
 
   const handleDeleteRequest = (id, resetCardState) => {
     setDeleteCandidate({ id, resetCardState });
+  };
+
+  const handleCreateFolder = (event) => {
+    event.preventDefault();
+    const trimmedName = folderName.trim();
+
+    if (!trimmedName) {
+      toast.error("Folder name is required");
+      return;
+    }
+
+    if (uniqueCategories.some((category) => category.toLowerCase() === trimmedName.toLowerCase())) {
+      toast.error("That folder already exists");
+      return;
+    }
+
+    setCustomFolders((prev) => [...prev, trimmedName]);
+    setSelectedCategory(trimmedName);
+    setFolderName("");
+    setIsFolderModalOpen(false);
+    toast.success(`Folder "${trimmedName}" created`);
   };
 
   const confirmDelete = async () => {
@@ -107,12 +136,19 @@ export function DashboardClient({ initialBookmarks }) {
           <p className="text-muted-foreground mt-1">Manage, search, and organize your bookmarks from one focused workspace.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="inline-flex h-10 items-center justify-center rounded-md bg-sky-100 px-4 py-2 text-sm font-medium text-sky-900 shadow-sm ring-1 ring-inset ring-sky-200 transition-colors hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-ring">
+          <button
+            onClick={() => setIsFolderModalOpen(true)}
+            title="Create a new folder"
+            aria-label="Create a new folder"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-sky-100 px-4 py-2 text-sm font-medium text-sky-900 shadow-sm ring-1 ring-inset ring-sky-200 transition-colors hover:bg-sky-200 focus:outline-none focus:ring-2 focus:ring-ring"
+          >
             <FolderPlus className="mr-2 h-4 w-4" />
             New Folder
           </button>
           <button 
             onClick={() => setIsAddModalOpen(true)}
+            title="Add a new bookmark"
+            aria-label="Add a new bookmark"
             className="inline-flex h-10 items-center justify-center rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-teal-900/20 transition-colors hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <BookmarkPlus className="mr-2 h-4 w-4" />
@@ -158,17 +194,21 @@ export function DashboardClient({ initialBookmarks }) {
         {/* Search Bar */}
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <input 
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search bookmarks..."
-            value={searchQuery}
+            <input 
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search bookmarks..."
+              title="Search bookmarks by title or URL"
+              aria-label="Search bookmarks by title or URL"
+              value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex h-10 w-full rounded-md border border-teal-900/10 bg-white pl-10 pr-10 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery("")}
+              title="Clear search"
+              aria-label="Clear search"
               className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               <X className="h-3 w-3" />
@@ -233,12 +273,17 @@ export function DashboardClient({ initialBookmarks }) {
                 </div>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className={cn(
+                "grid animate-in fade-in slide-in-from-bottom-4 duration-500",
+                isCompactView ? "gap-3 sm:grid-cols-2 lg:grid-cols-3" : "gap-4 sm:grid-cols-2"
+              )}>
                 {filteredBookmarks.map((bookmark) => (
                   <BookmarkCard 
                     key={bookmark.id} 
                     bookmark={bookmark} 
                     onDelete={handleDeleteRequest} 
+                    compact={isCompactView}
+                    useColorBadge={useColorBadges}
                   />
                 ))}
               </div>
@@ -254,12 +299,14 @@ export function DashboardClient({ initialBookmarks }) {
               <p className="text-sm text-muted-foreground">No categories yet.</p>
             ) : (
               <div className="space-y-3">
-                <div 
+                <button 
                   onClick={() => setSelectedCategory("All")}
                   className={cn(
-                    "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
+                    "flex w-full items-center justify-between rounded-md p-2 text-left transition-colors",
                     selectedCategory === "All" ? "bg-teal-100 text-teal-900 font-medium" : "hover:bg-sky-50"
                   )}
+                  title="Show all bookmarks"
+                  aria-label="Show all bookmarks"
                 >
                   <div className="flex items-center gap-3">
                     <div className="h-2.5 w-2.5 rounded-full bg-teal-500" />
@@ -268,7 +315,7 @@ export function DashboardClient({ initialBookmarks }) {
                   <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                     {bookmarks.length}
                   </span>
-                </div>
+                </button>
                 
                 {uniqueCategories.map((category, i) => {
                   const count = bookmarks.filter(b => (b.category || 'Uncategorized') === category).length;
@@ -277,13 +324,15 @@ export function DashboardClient({ initialBookmarks }) {
                   const isActive = selectedCategory === category;
                   
                   return (
-                    <div 
+                    <button 
                       key={category} 
                       onClick={() => setSelectedCategory(category)}
                       className={cn(
-                        "flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors",
+                        "flex w-full items-center justify-between rounded-md p-2 text-left transition-colors",
                         isActive ? "bg-teal-100 text-teal-900 font-medium" : "hover:bg-sky-50"
                       )}
+                      title={`Filter by ${category}`}
+                      aria-label={`Filter by ${category}`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`h-2.5 w-2.5 rounded-full ${color}`} />
@@ -292,7 +341,7 @@ export function DashboardClient({ initialBookmarks }) {
                       <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                         {count}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -312,12 +361,37 @@ export function DashboardClient({ initialBookmarks }) {
                   <p className="mt-1 text-xs text-muted-foreground">Your saved links are scoped to your signed-in account.</p>
                 </div>
               </div>
-              <label className="flex cursor-pointer items-center justify-between rounded-md border border-sky-200 bg-sky-50/70 p-3">
+              <label className="flex cursor-pointer items-center justify-between rounded-md border border-sky-200 bg-sky-50/70 p-3" title="Toggle compact bookmark cards">
                 <span>
-                  <span className="block font-medium">Realtime updates</span>
-                  <span className="block text-xs text-muted-foreground">Keep the dashboard synced as bookmarks change.</span>
+                  <span className="flex items-center gap-2 font-medium">
+                    <Minimize2 className="h-4 w-4 text-sky-700" />
+                    Compact cards
+                  </span>
+                  <span className="block text-xs text-muted-foreground">Fit more bookmarks into the visible grid.</span>
                 </span>
-                <input type="checkbox" checked readOnly className="h-4 w-4 accent-foreground" />
+                <input
+                  type="checkbox"
+                  checked={isCompactView}
+                  onChange={(event) => setIsCompactView(event.target.checked)}
+                  className="h-4 w-4 accent-teal-700"
+                  aria-label="Toggle compact bookmark cards"
+                />
+              </label>
+              <label className="flex cursor-pointer items-center justify-between rounded-md border border-amber-200 bg-amber-50/70 p-3" title="Toggle colored category badges">
+                <span>
+                  <span className="flex items-center gap-2 font-medium">
+                    <Palette className="h-4 w-4 text-amber-700" />
+                    Color badges
+                  </span>
+                  <span className="block text-xs text-muted-foreground">Show category labels with warm accent styling.</span>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={useColorBadges}
+                  onChange={(event) => setUseColorBadges(event.target.checked)}
+                  className="h-4 w-4 accent-teal-700"
+                  aria-label="Toggle colored category badges"
+                />
               </label>
             </div>
           </div>
@@ -329,6 +403,18 @@ export function DashboardClient({ initialBookmarks }) {
           onSubmit={handleAddBookmark} 
           onCancel={() => setIsAddModalOpen(false)} 
           isLoading={isSubmitting} 
+        />
+      )}
+
+      {isFolderModalOpen && (
+        <NewFolderModal
+          folderName={folderName}
+          setFolderName={setFolderName}
+          onSubmit={handleCreateFolder}
+          onCancel={() => {
+            setFolderName("");
+            setIsFolderModalOpen(false);
+          }}
         />
       )}
 
@@ -366,6 +452,8 @@ function FilterChip({ label, isActive, onClick }) {
   return (
     <button
       onClick={onClick}
+      title={`Filter by ${label}`}
+      aria-label={`Filter by ${label}`}
       className={cn(
         "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         isActive 
@@ -379,3 +467,57 @@ function FilterChip({ label, isActive, onClick }) {
 }
 
 const categoryText = (cat) => `category '${cat}'`;
+
+function NewFolderModal({ folderName, setFolderName, onSubmit, onCancel }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-sm rounded-xl border border-teal-900/10 bg-white p-6 shadow-2xl shadow-teal-950/20 animate-in fade-in zoom-in-95 duration-200">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Create Folder</h2>
+          <button
+            onClick={onCancel}
+            title="Close folder dialog"
+            aria-label="Close folder dialog"
+            className="rounded-md p-2 transition-colors hover:bg-teal-50"
+          >
+            <X className="h-5 w-5 text-muted-foreground" />
+          </button>
+        </div>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none" htmlFor="folder-name">Folder name</label>
+            <input
+              id="folder-name"
+              value={folderName}
+              onChange={(event) => setFolderName(event.target.value)}
+              placeholder="e.g. Design, Research, Tools"
+              title="Enter folder name"
+              aria-label="Folder name"
+              autoFocus
+              className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            />
+          </div>
+          <div className="mt-6 flex justify-end gap-3 border-t border-teal-900/10 pt-4">
+            <button
+              type="button"
+              onClick={onCancel}
+              title="Cancel folder creation"
+              aria-label="Cancel folder creation"
+              className="inline-flex h-10 items-center justify-center rounded-md border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-900 hover:bg-sky-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              title="Create folder"
+              aria-label="Create folder"
+              className="inline-flex h-10 items-center justify-center rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800"
+            >
+              Create
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

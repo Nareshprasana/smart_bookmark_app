@@ -36,7 +36,7 @@ export function Navbar({ user }) {
     <header className="sticky top-0 z-50 w-full border-b border-teal-900/10 bg-white/80 shadow-sm shadow-teal-900/5 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75">
       <Container>
         <div className="flex h-16 items-center justify-between">
-          <a href="#dashboard" className="flex items-center gap-3">
+          <a href="#dashboard" title="Go to dashboard" aria-label="Go to dashboard" className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-white shadow-sm shadow-teal-800/20 transition-transform hover:scale-105">
               <Bookmark className="h-5 w-5" />
             </div>
@@ -51,6 +51,8 @@ export function Navbar({ user }) {
               <a
                 key={label}
                 href={href}
+                title={label}
+                aria-label={label}
                 className="inline-flex h-9 items-center gap-2 rounded-md px-3 transition-colors hover:bg-white hover:text-teal-800 hover:shadow-sm"
               >
                 <Icon className="h-4 w-4" />
@@ -95,6 +97,7 @@ export function Navbar({ user }) {
                   className="flex items-center gap-3 rounded-md py-1 pl-2 pr-1 transition-colors hover:bg-teal-50"
                   aria-label="Open profile menu"
                   aria-expanded={isProfileOpen}
+                  title="Open profile menu"
                 >
                   <div className="flex max-w-44 flex-col text-right">
                     <span className="truncate text-sm font-medium leading-none">{user.user_metadata?.full_name || "User"}</span>
@@ -111,13 +114,15 @@ export function Navbar({ user }) {
                         <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
-                    <a href="#settings" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-teal-50 hover:text-teal-800">
+                    <a href="#settings" title="Open account settings" aria-label="Open account settings" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-teal-50 hover:text-teal-800">
                       <Settings className="h-4 w-4" />
                       Account settings
                     </a>
                     <button
                       onClick={handleLogout}
                       disabled={isLoggingOut}
+                      title="Logout"
+                      aria-label="Logout"
                       className="mt-1 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
                     >
                       <LogOut className="h-4 w-4" />
@@ -127,7 +132,7 @@ export function Navbar({ user }) {
                 )}
               </div>
             ) : (
-              <a href="/login" className="hidden rounded-md bg-teal-700 px-3 py-2 text-sm font-medium text-white shadow-sm shadow-teal-900/20 hover:bg-teal-800 md:inline-flex">
+              <a href="/login" title="Sign in" aria-label="Sign in" className="hidden rounded-md bg-teal-700 px-3 py-2 text-sm font-medium text-white shadow-sm shadow-teal-900/20 hover:bg-teal-800 md:inline-flex">
                 Sign in
               </a>
             )}
@@ -151,6 +156,8 @@ export function Navbar({ user }) {
                   key={label}
                   href={href}
                   onClick={() => setIsMobileMenuOpen(false)}
+                  title={label}
+                  aria-label={label}
                   className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-teal-50 hover:text-teal-800"
                 >
                   <Icon className="h-4 w-4 text-muted-foreground" />
@@ -159,6 +166,8 @@ export function Navbar({ user }) {
               ))}
               <button
                 onClick={focusSearch}
+                title="Search bookmarks"
+                aria-label="Search bookmarks"
                 className="flex items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium hover:bg-sky-50 hover:text-sky-800"
               >
                 <Search className="h-4 w-4 text-muted-foreground" />
@@ -177,6 +186,8 @@ export function Navbar({ user }) {
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
+                  title="Logout"
+                  aria-label="Logout"
                   className="mt-1 flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm font-medium text-destructive hover:bg-destructive/10 disabled:opacity-50"
                 >
                   <LogOut className="h-4 w-4" />

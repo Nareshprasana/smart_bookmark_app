@@ -43,6 +43,8 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
           <h2 className="text-xl font-semibold tracking-tight">Add New Bookmark</h2>
           <button
             onClick={onCancel}
+            title="Close add bookmark dialog"
+            aria-label="Close add bookmark dialog"
             className="rounded-md p-2 transition-colors hover:bg-teal-50"
           >
             <X className="h-5 w-5 text-muted-foreground" />
@@ -55,6 +57,8 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <input
               {...register("url")}
               placeholder="https://example.com"
+              title="Bookmark URL"
+              aria-label="Bookmark URL"
               className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
             {errors.url && <p className="text-sm text-destructive">{errors.url.message}</p>}
@@ -65,6 +69,8 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <input
               {...register("title")}
               placeholder="Bookmark Title"
+              title="Bookmark title"
+              aria-label="Bookmark title"
               className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
             {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
@@ -75,6 +81,8 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <input
               {...register("category")}
               placeholder="e.g. Work, Reading List"
+              title="Bookmark category"
+              aria-label="Bookmark category"
               className="flex h-10 w-full rounded-md border border-teal-900/10 bg-teal-50/40 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
@@ -83,6 +91,8 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <button
               type="button"
               onClick={onCancel}
+              title="Cancel adding bookmark"
+              aria-label="Cancel adding bookmark"
               className="inline-flex h-10 items-center justify-center rounded-md border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-medium text-sky-900 hover:bg-sky-100"
             >
               Cancel
@@ -90,6 +100,8 @@ export function BookmarkForm({ onSubmit, onCancel, isLoading }) {
             <button
               type="submit"
               disabled={isLoading}
+              title="Save bookmark"
+              aria-label="Save bookmark"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-teal-700 px-4 py-2 text-sm font-medium text-white hover:bg-teal-800 disabled:opacity-50"
             >
               {isLoading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />}
