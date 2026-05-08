@@ -9,6 +9,7 @@ A production-ready SaaS application for managing and categorizing bookmarks inte
 - **Optimistic UI**: Lightning-fast frontend updates before the database responds.
 - **High-Performance Filtering**: Debounced search and dynamic category chips.
 - **Security**: Database-level isolation using PostgreSQL Row Level Security (RLS).
+- **Privacy Controls**: Users can export their bookmarks, delete individual bookmarks, or permanently delete their account and saved data.
 
 ## Tech Stack
 - **Framework**: Next.js 15 (App Router)
@@ -37,7 +38,9 @@ A production-ready SaaS application for managing and categorizing bookmarks inte
    ```env
    NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
    NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
+   SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
    ```
+   `SUPABASE_SERVICE_ROLE_KEY` is only used on the server-side account deletion route. Never expose it in client-side code.
 
 4. **Run the development server**
    ```bash
@@ -78,6 +81,20 @@ PostgreSQL intercepts the raw SQL queries and dynamically injects `WHERE user_id
 **This guarantees that:**
 - Even if a malicious user manipulates a frontend API call to request `SELECT * FROM bookmarks`, the database will physically refuse to return rows belonging to other users.
 - `INSERT` policies use a `WITH CHECK` constraint, preventing users from forging a payload to assign a bookmark to a different `user_id`.
+
+---
+
+## User Privacy & Data Handling
+
+User privacy is handled as a core part of the application architecture:
+
+1. **Minimal User Data**: The app stores only the authenticated user's bookmark data: title, URL, category, creation date, and the Supabase `user_id` required for ownership checks.
+2. **Private By Default**: Every bookmark row is tied to `auth.uid()` through Row Level Security, so users can only view, create, update, or delete their own records.
+3. **Secure Authentication**: Google OAuth is managed through Supabase Auth. The app uses Supabase session cookies/JWTs rather than storing passwords directly.
+4. **User-Controlled Export**: The Account Center includes an **Export data** action that downloads the signed-in user's bookmarks as a JSON file.
+5. **Data Deletion**: Users can delete individual bookmarks, and the Account Center includes a protected account deletion flow that requires typing `DELETE` before removal.
+6. **Cascade Cleanup**: The `bookmarks.user_id` foreign key uses `on delete cascade`, so when an account is deleted through `/api/account/delete`, the user's saved bookmarks are removed with the auth user.
+7. **Secret Isolation**: The Supabase service role key is only read inside the server route used for account deletion and must never be exposed with a `NEXT_PUBLIC_` prefix.
 
 ---
 
